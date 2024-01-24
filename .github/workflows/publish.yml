@@ -6,9 +6,11 @@ on:
   push:
     branches:
       - 'main'       # Run the workflow when pushing to the main branch
+      - 'ServerSide.GridUtilities/ServerSide.GridUtilities/**'
   pull_request:
     branches:
       - '*'          # Run the workflow for all pull requests
+      - 'ServerSide.GridUtilities/ServerSide.GridUtilities/**'
   release:
     types:
       - published    # Run the workflow when a new GitHub release is published

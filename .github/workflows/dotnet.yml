@@ -1,17 +1,17 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
 name: .NET
 
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'ServerSide.GridUtilities/ServerSide.GridUtilities.Example.API/**'
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'ServerSide.GridUtilities/ServerSide.GridUtilities.Tests/**'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
