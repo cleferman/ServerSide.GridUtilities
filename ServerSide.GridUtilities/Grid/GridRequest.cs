@@ -34,7 +34,7 @@ public class Pagination : IPagination
 /// Represents the sort type for sorting columns.
 /// 0 for Ascending, 1 for Descending.
 /// </summary>
-[JsonConverter(typeof(EnumJsonConverter<SortType>))]
+[JsonConverter(typeof(SortEnumJsonConverter))]
 public enum SortType
 {
     /// <summary>

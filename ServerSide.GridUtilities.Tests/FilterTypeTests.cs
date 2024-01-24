@@ -5,42 +5,43 @@ using System.Text.Json;
 
 namespace ServerSide.GridUtilities.Tests
 {
-    public class SortTypeTests
+    public class FilterTypeTests
     {
         [Test]
-        public void SortTypeSerialization_AllMembers_Success()
+        public void FilterTypeSerialization_AllMembers_Success()
         {
-            foreach (SortType sortType in Enum.GetValues(typeof(SortType)))
+            foreach (FilterType filterType in Enum.GetValues(typeof(FilterType)))
             {
-                var json = JsonSerializer.Serialize(sortType);
-                Assert.That(json.Equals($"\"{sortType.GetDescription()}\""));
+                var json = JsonSerializer.Serialize(filterType);
+                Assert.That(json.Equals($"\"{filterType.GetDescription()}\""));
             }
         }
 
         [Test]
-        public void SortTypeDeSerialization_AllMembers_Success()
+        public void FilterTypeDeSerialization_AllMembers_Success()
         {
-            foreach (SortType sortType in Enum.GetValues(typeof(SortType)))
+            foreach (FilterType filterType in Enum.GetValues(typeof(FilterType)))
             {
-                var sortModel = new SortModel
+                var filterModel = new FilterModel
                 {
-                    ColName = "Name",
-                    Sort = sortType
+                    FieldName = "Name",
+                    FilterType = filterType,
+                    Conditions = []
                 };
 
-                var model = JsonSerializer.Deserialize<FilterModel>(JsonSerializer.Serialize(sortModel));
+                var model = JsonSerializer.Deserialize<FilterModel>(JsonSerializer.Serialize(filterModel));
 
                 Assert.IsNotNull(model);
-                Assert.That(sortModel.Sort == sortType);
+                Assert.That(model.FilterType == filterType);
             }
         }
 
         [Test]
-        public void FilterTypeDeSerialization_Descc_InvalidFilterType()
+        public void FilterTypeDeSerialization_Set_InvalidFilterType()
         {
-            var sortModel = "{\"ColName\":\"Name\",\"Sort\":\"descc\"}";
+            var filterModel = "{\"Conditions\":[],\"FieldName\":\"Name\",\"FilterType\":\"set\",\"Operator\":null}";
 
-            Assert.That(() => JsonSerializer.Deserialize<SortModel>(sortModel), Throws.TypeOf<JsonException>().With.Message.EqualTo("Invalid SortType value: descc"));
+            Assert.That(() => JsonSerializer.Deserialize<FilterModel>(filterModel), Throws.TypeOf<JsonException>().With.Message.EqualTo("Invalid FilterType value: set"));
         }
     }
 }

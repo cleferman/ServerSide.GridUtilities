@@ -159,6 +159,7 @@ namespace ServerSide.GridUtilities.Tests
         [Test]
         public void FilterBy_DateEquals_Success()
         {
+            var enrollmentDate = new DateTime(2019, 1, 1);
             var model = new FilterModel
             {
                 FieldName = "EnrollmentDate",
@@ -168,7 +169,7 @@ namespace ServerSide.GridUtilities.Tests
                     new Condition
                         {
                             FilterMethod = FilterMethod.Equals,
-                            Values = [new DateTime(2022, 1, 1).ToString()]
+                            Values = [enrollmentDate.ToString()]
                         }
                 ]
             };
@@ -180,12 +181,14 @@ namespace ServerSide.GridUtilities.Tests
                 .ToList();
 
             Assert.That(results.Count == 1);
-            Assert.That(results[0].EnrollmentDate == new DateTime(2022, 1, 1));
+            Assert.That(results[0].EnrollmentDate.Equals(enrollmentDate));
         }
 
         [Test]
         public void FilterBy_DateGreaterThan_Success()
-        {
+        { 
+            var enrollmentDate = new DateTime(2019, 12, 31);
+
             var model = new FilterModel
             {
                 FieldName = "EnrollmentDate",
@@ -195,7 +198,7 @@ namespace ServerSide.GridUtilities.Tests
                     new Condition
                         {
                             FilterMethod = FilterMethod.GreaterThan,
-                            Values = [new DateTime(2021, 1, 1).ToString()]
+                            Values = [enrollmentDate.ToString()]
                         }
                 ]
             };
@@ -206,13 +209,14 @@ namespace ServerSide.GridUtilities.Tests
                 .FilterBy(filterModel)
                 .ToList();
 
-            Assert.That(results.Count == 1000);
-            Assert.That(results.All(r => r.EnrollmentDate > new DateTime(2021, 1, 1)));
+            Assert.That(results.Count == 998);
+            Assert.That(results.All(r => r.EnrollmentDate > enrollmentDate));
         }
 
         [Test]
         public void FilterBy_DateLessThan_Success()
         {
+            var enrollmentDate = new DateTime(2019, 12, 31);
             var model = new FilterModel
             {
                 FieldName = "EnrollmentDate",
@@ -222,7 +226,7 @@ namespace ServerSide.GridUtilities.Tests
                     new Condition
                         {
                             FilterMethod = FilterMethod.LessThan,
-                            Values = [new DateTime(2023, 1, 1).ToString()]
+                            Values = [enrollmentDate.ToString()]
                         }
                 ]
             };
@@ -233,13 +237,15 @@ namespace ServerSide.GridUtilities.Tests
                 .FilterBy(filterModel)
                 .ToList();
 
-            Assert.That(results.Count == 1000);
-            Assert.That(results.All(r => r.EnrollmentDate < new DateTime(2023, 1, 1)));
+            Assert.That(results.Count == 2);
+            Assert.That(results.All(r => r.EnrollmentDate < enrollmentDate));
         }
 
         [Test]
         public void FilterBy_DateNotEqual_Success()
         {
+            var enrollmentDate = new DateTime(2019, 1, 1);
+
             var model = new FilterModel
             {
                 FieldName = "EnrollmentDate",
@@ -249,7 +255,7 @@ namespace ServerSide.GridUtilities.Tests
                     new Condition
                         {
                             FilterMethod = FilterMethod.NotEqual,
-                            Values = [new DateTime(2022, 1, 1).ToString()]
+                            Values = [enrollmentDate.ToString()]
                         }
                 ]
             };
@@ -261,7 +267,7 @@ namespace ServerSide.GridUtilities.Tests
                 .ToList();
 
             Assert.That(results.Count == 999);
-            Assert.That(results.All(r => r.EnrollmentDate != new DateTime(2022, 1, 1)));
+            Assert.That(results.All(r => !r.EnrollmentDate.Equals(enrollmentDate)));
         }
 
         [TearDown]
