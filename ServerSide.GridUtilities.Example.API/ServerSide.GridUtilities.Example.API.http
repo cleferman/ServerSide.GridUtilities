@@ -1,0 +1,40 @@
+@ServerSide.GridUtilities.Example.API_HostAddress = http://localhost:5084
+
+GET {{ServerSide.GridUtilities.Example.API_HostAddress}}/students/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "pagination": {
+    "startRow": 0,
+    "endRow": 50
+  },
+  "columns": [
+    "Name", "EnrollmentDate", "Age"
+  ],
+  "sorting": [
+    {
+      "colName": "Age",
+      "sort": 1
+    }
+  ],
+  "filtering": [
+    {
+      "conditions": [
+        {
+          "filterMethod": "contains",
+          "values": [
+            "Student 1"
+          ]
+        }
+      ],
+      "fieldName": "Name",
+      "filterType": "text"
+    }
+  ],
+  "grouping": {
+    "rowGroupCols": [],
+    "groupKeys": []
+  }
+}
+###
