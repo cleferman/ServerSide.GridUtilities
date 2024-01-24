@@ -273,7 +273,6 @@ namespace ServerSide.GridUtilities.Tests
         [TearDown]
         public void FinishTest()
         {
-            Console.WriteLine("Dispose fixture");
             studentsFixture.Dispose();
         }
     }
