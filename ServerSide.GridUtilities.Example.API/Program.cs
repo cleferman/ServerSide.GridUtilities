@@ -41,7 +41,7 @@ app.MapGet("/students", GetFilteredStudents)
 
 app.Run();
 
-async Task<ResultsDto<Student>> GetFilteredStudents([FromBody] StudentsGridRequest gridRequest)
+async Task<GridResults<Student>> GetFilteredStudents([FromBody] GridRequest gridRequest)
 {
     var query = fixtures.StudentsContext.Students
         .SelectColumns(gridRequest.Columns)
@@ -51,14 +51,9 @@ async Task<ResultsDto<Student>> GetFilteredStudents([FromBody] StudentsGridReque
     var results = await query.ToListAsync();
     var totalCount = await query.CountAsync();
 
-    return new ResultsDto<Student>
+    return new GridResults<Student>
     {
         Results = results,
         TotalCount = totalCount
     };
-}
-
-public class StudentsGridRequest : GridRequest<Pagination>
-{
-    public override Pagination Pagination { get; set; } = null!;
 }

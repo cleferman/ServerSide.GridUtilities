@@ -1,6 +1,14 @@
 ﻿using ServerSide.GridUtilities.Grid.Constants;
+using ServerSide.GridUtilities.Grid.JsonConverters;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace ServerSide.GridUtilities.Grid;
+
+public sealed class GridRequest : GridRequest<Pagination>
+{
+    public override Pagination Pagination { get; set; } = null!;
+}
 
 public interface IPagination { }
 public abstract class GridRequest<T> where T : IPagination
@@ -17,16 +25,31 @@ public abstract class GridRequest<T> where T : IPagination
 }
 
 public class Pagination : IPagination
-{
+{   
     public int StartRow { get; set; }
     public int EndRow { get; set; }
 }
 
+/// <summary>
+/// Represents the sort type for sorting columns.
+/// 0 for Ascending, 1 for Descending.
+/// </summary>
+[JsonConverter(typeof(EnumJsonConverter<SortType>))]
 public enum SortType
 {
+    /// <summary>
+    /// Sort in ascending order.
+    /// </summary>
+    [Description("asc")]
     Ascending,
+
+    /// <summary>
+    /// Sort in descending order.
+    /// </summary>
+    [Description("desc")]
     Descending
 }
+
 
 public class SortModel
 {
@@ -49,12 +72,16 @@ public class SortModel
 
 public class FilterModel
 {
-    public Condition[] Conditions { get; set; } = Array.Empty<Condition>();
+    public Condition[] Conditions { get; set; } = [];
 
-    public string FieldName { get; set; } = string.Empty;
+    public string FieldName { get; set; } = null!;
 
     public FilterType FilterType { get; set; }
 
+    /// <summary>
+    /// Null for a single condition filter.
+    /// Specify the operator when you have two conditions and you want to apply conditional logic between them.
+    /// </summary>
     public FilterOperator? Operator { get; set; }
 }
 
@@ -62,13 +89,13 @@ public class Condition
 {
     public FilterMethod FilterMethod { get; set; }
 
-    public string?[] Values { get; set; } = Array.Empty<string>();
+    public string?[] Values { get; set; } = [];
 }
 
 public class GroupingModel
 {
-    public RowGroupCol[] RowGroupCols { get; set; } = Array.Empty<RowGroupCol>();
-    public string[] GroupKeys { get; set; } = Array.Empty<string>();
+    public RowGroupCol[] RowGroupCols { get; set; } = [];
+    public string[] GroupKeys { get; set; } = [];
 }
 
 public class RowGroupCol
