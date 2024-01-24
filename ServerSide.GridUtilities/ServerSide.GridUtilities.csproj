@@ -6,5 +6,30 @@
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <Title>Server Side Grid Utilities for IQueryable</Title>
         <VersionPrefix>1.0.3</VersionPrefix>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <Authors>Cosmin Leferman</Authors>
+        <Description>This package adds server side grid utilities to your IQueryable such as Filtering, Sorting, Grouping and column selection</Description>
+
+        <!-- PackageProjectUrl is different from the repository URL. It can be a documentation
+         website or a website explaining the project -->
+        <PackageProjectUrl></PackageProjectUrl>
+        <RepositoryUrl>https://github.com/cleferman/ServerSide.GridUtilities</RepositoryUrl>
+        <!-- A list of tags to help the search engine to understand the content of the package -->
+        <PackageTags>library, grid-utilities, server-side, filtering, sorting, grouping</PackageTags>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="MinVer" Version="4.3.0">
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
+    </ItemGroup>
 </Project>
