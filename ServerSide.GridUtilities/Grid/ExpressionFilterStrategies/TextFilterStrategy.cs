@@ -1,14 +1,32 @@
-﻿using ServerSide.GridUtilities.Grid.Constants;
+﻿using ServerSide.GridUtilities.Extensions;
+using ServerSide.GridUtilities.Grid.Constants;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace ServerSide.GridUtilities.Grid.ExpressionFilterStrategies;
 public class TextFilterStrategy : IFilterStrategy
 {
-    public static FilterType METHOD => FilterType.Text;
+    private readonly FilterMethod[] AVAILABLE_FILTER_METHODS =
+    [
+        FilterMethod.Contains,
+        FilterMethod.NotContains,
+        FilterMethod.Equals,
+        FilterMethod.NotEqual,
+        FilterMethod.StartsWith,
+        FilterMethod.EndsWith,
+        FilterMethod.Blank,
+        FilterMethod.NotBlank,
+        FilterMethod.In,
+        FilterMethod.NotIn,
+    ];
 
     public Expression? GetExpression<T>(MemberExpression selector, FilterMethod filterMethod, string?[] filterValues)
     {
+        if (AVAILABLE_FILTER_METHODS.All(t => t != filterMethod))
+        {
+            throw new NotSupportedException($"Filter method: {filterMethod.GetDescription()} not supported on type Text");
+        }
+
         Expression? expression = null;
 
         string filterValue = filterValues.Length > 0

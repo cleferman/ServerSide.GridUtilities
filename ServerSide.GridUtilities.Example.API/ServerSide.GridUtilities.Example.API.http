@@ -38,3 +38,42 @@ Content-Type: application/json
   }
 }
 ###
+
+GET {{ServerSide.GridUtilities.Example.API_HostAddress}}/testDocuments/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "pagination": {
+    "startRow": 0,
+    "endRow": 50
+  },
+  "columns": [
+    "Id", "StringTest"
+  ],
+  "sorting": [
+    {
+      "colName": "Id",
+      "sort": "desc"
+    }
+  ],
+  "filtering": [
+    {
+      "conditions": [
+        {
+          "filterMethod": "contains",
+          "values": [
+            "Hello"
+          ]
+        }
+      ],
+      "fieldName": "StringTest",
+      "filterType": "text"
+    }
+  ],
+  "grouping": {
+    "rowGroupCols": [],
+    "groupKeys": []
+  }
+}
+###

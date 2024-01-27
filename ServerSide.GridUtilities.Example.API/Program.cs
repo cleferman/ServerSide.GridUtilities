@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using ServerSide.GridUtilities.Example.API.DatabaseContext;
 using ServerSide.GridUtilities.Example.API.DatabaseContext.SeedData;
 using ServerSide.GridUtilities.Extensions;
@@ -29,22 +30,28 @@ var options = new DbContextOptionsBuilder<StudentsContext>()
                .Options;
 
 var fixtures = new StudentsSeedFixtures(options);
+MongoDbSeedFixtures mongoFixtures = new MongoDbSeedFixtures();
 
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/students", GetFilteredStudents)
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+app
+    .MapGet("/students", GetFilteredStudents)
+    .WithName("GetStudents")
+    .WithOpenApi();
+app
+    .MapGet("/testDocuments", GetFilteredTestDocument)
+    .WithName("GetTestDocuments")
+    .WithOpenApi();
 
 app.Run();
 
 async Task<GridResults<Student>> GetFilteredStudents([FromBody] GridRequest gridRequest)
 {
     var query = fixtures.StudentsContext.Students
-        .SelectColumns(gridRequest.Columns)
+        .Select(gridRequest.Columns)
         .FilterBy(gridRequest.Filtering)
         .OrderBy(gridRequest.Sorting);
 
@@ -52,6 +59,23 @@ async Task<GridResults<Student>> GetFilteredStudents([FromBody] GridRequest grid
     var totalCount = await query.CountAsync();
 
     return new GridResults<Student>
+    {
+        Results = results,
+        TotalCount = totalCount
+    };
+}
+
+GridResults<TestDocument> GetFilteredTestDocument([FromBody] GridRequest gridRequest)
+{
+    var query = mongoFixtures.mongoContext.collection.AsQueryable()
+        .Select(gridRequest.Columns)
+        .FilterBy(gridRequest.Filtering)
+        .OrderBy(gridRequest.Sorting);
+
+    var results = query.ToList();
+    var totalCount = query.Count();
+
+    return new GridResults<TestDocument>
     {
         Results = results,
         TotalCount = totalCount

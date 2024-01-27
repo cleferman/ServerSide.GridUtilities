@@ -1,14 +1,28 @@
-﻿using ServerSide.GridUtilities.Grid.Constants;
+﻿using ServerSide.GridUtilities.Extensions;
+using ServerSide.GridUtilities.Grid.Constants;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace ServerSide.GridUtilities.Grid.ExpressionFilterStrategies;
 public class DateFilterStrategy : IFilterStrategy
 {
-    public static FilterType METHOD => FilterType.Date;
+    private readonly FilterMethod[] AVAILABLE_FILTER_METHODS =
+    [
+        FilterMethod.Equals,
+        FilterMethod.NotEqual,
+        FilterMethod.GreaterThan,
+        FilterMethod.LessThan,
+        FilterMethod.Blank,
+        FilterMethod.NotBlank
+    ];
 
     public Expression? GetExpression<T>(MemberExpression selector, FilterMethod filterMethod, string?[] filterValues)
     {
+        if(AVAILABLE_FILTER_METHODS.All(t => t != filterMethod))
+        {
+            throw new NotSupportedException($"Filter method: {filterMethod.GetDescription()} not supported on type Date");
+        }
+
         Expression? expression = null;
 
         DateTime? dateFrom = filterValues.Length > 0 && !string.IsNullOrEmpty(filterValues[0]) ? DateTime.Parse(filterValues[0]!) : default;

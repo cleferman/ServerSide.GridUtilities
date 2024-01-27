@@ -38,7 +38,9 @@ namespace ServerSide.GridUtilities.Tests.SeedData
 
                 students.Add(student);
             }
+            students[0].Age = 16;
             students[0].EnrollmentDate = new DateTime(2019, 1, 1);
+            students[1].Age = 17;
             students[1].EnrollmentDate = new DateTime(2019, 5, 10);
 
             return students;

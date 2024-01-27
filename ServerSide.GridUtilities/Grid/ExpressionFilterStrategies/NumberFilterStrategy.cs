@@ -1,14 +1,31 @@
-﻿using ServerSide.GridUtilities.Grid.Constants;
+﻿using ServerSide.GridUtilities.Extensions;
+using ServerSide.GridUtilities.Grid.Constants;
 using System.Linq.Expressions;
 
 namespace ServerSide.GridUtilities.Grid.ExpressionFilterStrategies;
 
 public class NumberFilterStrategy : IFilterStrategy
 {
-    public static FilterType METHOD => FilterType.Number;
+    private readonly FilterMethod[] AVAILABLE_FILTER_METHODS =
+    [
+        FilterMethod.Equals,
+        FilterMethod.NotEqual,
+        FilterMethod.GreaterThan,
+        FilterMethod.LessThan,
+        FilterMethod.GreaterThanOrEqual,
+        FilterMethod.LessThanOrEqual,
+        FilterMethod.InRange,
+        FilterMethod.Blank,
+        FilterMethod.NotBlank
+    ];
 
     public Expression? GetExpression<T>(MemberExpression selector, FilterMethod filterMethod, string?[] filterValues)
     {
+        if (AVAILABLE_FILTER_METHODS.All(t => t != filterMethod))
+        {
+            throw new NotSupportedException($"Filter method: {filterMethod.GetDescription()} not supported on type Number");
+        }
+
         var isNullable = Nullable.GetUnderlyingType(selector.Type) != null;
         var member = isNullable
             ? Expression.PropertyOrField(selector, "Value")
@@ -43,8 +60,10 @@ public class NumberFilterStrategy : IFilterStrategy
         if (numberFrom.HasValue && (filterMethod == FilterMethod.LessThan || filterMethod == FilterMethod.GreaterThan))
         {
 
-            var filterExpr = Expression.Constant(numberFrom.Value);
-            
+            var filterExpr = Expression.Convert(
+                Expression.Constant(numberFrom.Value, numberFrom.Value.GetType()),
+                member.Type
+            );
             expression = filterMethod == FilterMethod.LessThan
                 ? Expression.LessThan(member, filterExpr)
                 : Expression.GreaterThan(member, filterExpr);

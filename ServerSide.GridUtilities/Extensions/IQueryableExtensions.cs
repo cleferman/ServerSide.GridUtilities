@@ -5,7 +5,7 @@ namespace ServerSide.GridUtilities.Extensions;
 
 public static class IQueryableExtensions
 {
-    public static IQueryable<T> SelectColumns<T>(this IQueryable<T> queryable, IList<string> columns)
+    public static IQueryable<T> Select<T>(this IQueryable<T> queryable, IList<string> columns)
     {
         if (columns.Count == 0) return queryable;
 
@@ -195,6 +195,7 @@ public static class IQueryableExtensions
         }
         return expression;
     }
+
     private static bool IsDoingGrouping(GroupingModel groupingModel)
     {
         return groupingModel.RowGroupCols.Length > groupingModel.GroupKeys.Length;
