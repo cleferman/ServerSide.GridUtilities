@@ -15,7 +15,7 @@ Content-Type: application/json
   "sorting": [
     {
       "colName": "Age",
-      "sort": "desc"
+      "sort": "DESCENDING"
     }
   ],
   "filtering": [

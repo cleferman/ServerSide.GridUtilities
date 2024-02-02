@@ -90,7 +90,7 @@ public static class IQueryableExtensions
         return count > 0 ? source.Provider.CreateQuery<T>(expression) : source;
     }
 
-    public static IQueryable<T> GroupByProp<T>(this IQueryable<T> source, GroupingModel groupModel)
+    public static IQueryable<T> GroupBy<T>(this IQueryable<T> source, GroupingModel groupModel)
     {
         if (IsDoingGrouping(groupModel))
         {
@@ -109,91 +109,19 @@ public static class IQueryableExtensions
             );
 
             var selectExpression = MapGroupToObject<IGrouping<object, T>, T>(new[] { selector.Member.Name }, groupByColumn);
-            //below command shows how Sum works for the field in AssetList
-            // var selectExpression = CreateNewObjectExpression<IGrouping<object, T>, T>(new[] { selector.Member.Name, "A029_SIIValue" }, groupByColumn);
             return source.GroupBy(keySelector).Select(selectExpression);
         }
         return source;
     }
 
-    public static IQueryable<T> LastEntryBy<T>(this IQueryable<T> source, string idField, string lastByField, string lastByValue)
+    public static IQueryable<T> ApplyGridRequest<T>(this IQueryable<T> source, GridRequest gridRequest)
     {
-        var outerParameter = Expression.Parameter(typeof(IGrouping<object, T>), "t");
-
-        var innerParameter = Expression.Parameter(typeof(T), "x");
-
-        Expression<Func<T, object>> keySelector = Expression.Lambda<Func<T, object>>
-        (
-            // x => x.idField
-            Expression.Convert(
-                Expression.PropertyOrField(innerParameter, idField),
-                typeof(object)
-            ),
-            // x =>
-            innerParameter
-        );
-
-        var lastByFieldSelector = Expression.PropertyOrField(innerParameter, lastByField);
-
-        Expression<Func<IGrouping<object, T>, T>> orderByDescending = Expression.Lambda<Func<IGrouping<object, T>, T>>
-        (
-            // t.OrderByDescending(x => x.ValidityDate).First()
-            Expression.Call(
-                typeof(Enumerable),
-                "First",
-                new[] { typeof(T) },
-                // t.OrderByDescending(x => x.ValidityDate)
-                Expression.Call(
-                    typeof(Enumerable),
-                    "OrderByDescending",
-                    new[] { typeof(T), lastByFieldSelector.Type },
-                    outerParameter, Expression.Lambda(lastByFieldSelector, innerParameter)
-                )
-            ),
-            // t =>
-            outerParameter
-        );
-
-        var expression = HandleExpressionByType(lastByFieldSelector, lastByValue);
-        if (expression.NodeType != ExpressionType.Default || expression.Type != typeof(void))
-        {
-            //x.ValidityDate.HasValue && (x.ValidityDate.Value.Date <= Constant<System.DateTime>(12/30/2023 12:00:00 AM))
-            Expression<Func<T, bool>> whereSelector = Expression.Lambda<Func<T, bool>>
-            (
-                expression,
-                innerParameter
-            );
-
-            source = source.Where(whereSelector);
-        }
-
         return source
-            .GroupBy(keySelector)
-            .Select(orderByDescending);
-    }
-
-    private static Expression HandleExpressionByType(MemberExpression member, string value)
-    {
-        var underlyingType = Nullable.GetUnderlyingType(member.Type);
-        Expression expression = Expression.Empty();
-        if (member.Type.ToString() == "System.DateTime" || underlyingType?.ToString() == "System.DateTime")
-        {
-            var isNullable = underlyingType != null;
-            var dateMember = isNullable
-                ? Expression.PropertyOrField(Expression.PropertyOrField(member, "Value"), "Date")
-                : Expression.PropertyOrField(member, "Date");
-
-            var lastByValueExpression = Expression.Constant(DateTime.Parse(value), typeof(DateTime));
-
-            expression = Expression.LessThanOrEqual(dateMember, lastByValueExpression);
-
-            if (isNullable)
-            {
-                var hasValueMember = Expression.PropertyOrField(member, "HasValue");
-                expression = Expression.AndAlso(hasValueMember, expression);
-            }
-        }
-        return expression;
+           .Select(gridRequest.Columns)
+           .FilterBy(gridRequest.Filtering)
+           .OrderBy(gridRequest.Sorting)
+           .Skip(gridRequest.Pagination.StartRow)
+           .Take(gridRequest.Pagination.EndRow - gridRequest.Pagination.StartRow);
     }
 
     private static bool IsDoingGrouping(GroupingModel groupingModel)

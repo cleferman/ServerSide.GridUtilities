@@ -7,11 +7,11 @@ using ServerSide.GridUtilities.Tests.SeedData;
 
 namespace ServerSide.GridUtilities.Tests
 {
+
  public class FilterByTests
  {
   private DbContextOptions<StudentsContext> _options;
   private StudentsSeedFixtures studentsFixture;
-  private StudentsContext dbContext;
 
   [SetUp]
   public void Setup()
@@ -22,15 +22,7 @@ namespace ServerSide.GridUtilities.Tests
 
    studentsFixture = new StudentsSeedFixtures(_options);
   }
-  public IReadOnlyList<Student> GetStudents(GridRequest gridRequest)
-  {
-   return dbContext.Students
-      .FilterBy(gridRequest.Filtering)
-      .OrderBy(gridRequest.Sorting)
-      .Select(gridRequest.Columns)
-      .Skip(gridRequest.Pagination.StartRow).Take(gridRequest.Pagination.EndRow - gridRequest.Pagination.StartRow)
-      .ToList();
-  }
+
 
   [Test]
   public void FilterBy_TextEqualsEmpty_Success()

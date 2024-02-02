@@ -50,6 +50,8 @@ app.Run();
 
 async Task<GridResults<Student>> GetFilteredStudents([FromBody] GridRequest gridRequest)
 {
+    return await GetFilteredEntity<Student>(gridRequest);
+
     var query = fixtures.StudentsContext.Students
         .Select(gridRequest.Columns)
         .FilterBy(gridRequest.Filtering)
@@ -59,6 +61,23 @@ async Task<GridResults<Student>> GetFilteredStudents([FromBody] GridRequest grid
     var totalCount = await query.CountAsync();
 
     return new GridResults<Student>
+    {
+        Results = results,
+        TotalCount = totalCount
+    };
+}
+
+async Task<GridResults<T>> GetFilteredEntity<T>(GridRequest gridRequest) where T : class
+{
+    var query = fixtures.StudentsContext.Set<T>()
+        .Select(gridRequest.Columns)
+        .FilterBy(gridRequest.Filtering)
+        .OrderBy(gridRequest.Sorting);
+
+    var results = await query.ToListAsync();
+    var totalCount = await query.CountAsync();
+
+    return new GridResults<T>
     {
         Results = results,
         TotalCount = totalCount
