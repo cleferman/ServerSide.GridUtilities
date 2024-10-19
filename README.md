@@ -38,16 +38,10 @@
   <p align="center">
     A tiny library which adds typical server side grid actions like filtering, sorting, grouping and column selection.
     <br />
-    <a href="https://github.com/cleferman/ServerSide.GridUtilities"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/cleferman/ServerSide.GridUtilities/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/cleferman/ServerSide.GridUtilities/issues">Request Feature</a>
   </p>
 </div>
 
-
+>Note: I have no plans on maintaining this repository at the moment. Feel free to fork it or just simply use it as inspiration. 
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -88,6 +82,7 @@ The project aims to showcase the use of C# Expression Trees and how dynamic LINQ
 * [.NET 8][.net-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Getting Started
 
 ### Installation
